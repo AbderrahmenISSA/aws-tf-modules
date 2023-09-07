@@ -64,7 +64,7 @@ EOF
     DOCKER_IMAGE_NAME  = "${var.DOCKER_IMAGE_NAME}"
     DOCKER_IMAGE_TAG   = "${var.DOCKER_IMAGE_TAG}"
     CONTAINER_PORT     = var.CONTAINER_PORT
-    RDS_ENDPOINT       = "${var.RDS_ENDPOINT}"
+    RDS_ENDPOINT       = "${element(split(":", aws_db_instance.RDS_DB.endpoint), 0)}"
     DATABASE_USER      = "${var.DATABASE_USER}"
     DATABASE_PASSWORD  = "${var.DATABASE_PASSWORD}"
     DATABASE_NAME      = "${var.DATABASE_NAME}"
@@ -94,4 +94,6 @@ resource "aws_ecs_task_definition" "ECS_TASK_DEFINITION" {
         }
       }
   }
+
+  depends_on = [aws_db_instance.RDS_DB]
 }

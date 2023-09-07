@@ -8,7 +8,7 @@ resource "aws_security_group" "RDS_SG" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    cidr_blocks     = var.AUTHORISED_CIDR_BLOCKS
+    security_groups = ["${aws_security_group.ECS_SERVICE_SG.id}"]
   }
   
   egress {

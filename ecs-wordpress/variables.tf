@@ -10,10 +10,10 @@ variable "PRIVATE_SUBNETS_IDS" {}
 variable "AUTHORISED_CIDR_BLOCKS" {}
 
 ########################### RDS Config ###############################
-variable "RDS_ENDPOINT" {}
 variable "DATABASE_USER" {}
 variable "DATABASE_PASSWORD" {}
 variable "DATABASE_NAME" {}
+variable "DATABASE_INSTANCE_CLASS" {}
 
 ########################### ECS Service ##############################
 variable "TASK_EXECUTION_ROLE_ARN" {}
@@ -29,3 +29,4 @@ variable "DOCKER_IMAGE_TAG" {}
 ##################### ROUTE 53 CONFIGURATION #########################
 variable "ZONE" {}
 variable "RECORD" {}
+
