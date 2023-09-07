@@ -6,8 +6,8 @@ variable "ENV_PREFIX" {}
 variable "AWS_REGION" {}
 variable "VPC_ID" {}
 variable "PUBLIC_SUBNETS_IDS" {}
-variable "PRIVATE_SUBNETS_IDS" {}
-variable "AUTHORISED_CIDR_BLOCKS" {}
+variable "PRIVATE_APP_SUBNETS_IDS" {}
+variable "PRIVATE_DB_SUBNETS_IDS" {}
 
 ########################### RDS Config ###############################
 variable "DATABASE_USER" {}

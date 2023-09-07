@@ -27,7 +27,7 @@ resource "aws_security_group" "RDS_SG" {
 
 # Create RDS Subnet group
 resource "aws_db_subnet_group" "RDS_SUBNET_GROUP" {
-  subnet_ids = var.SUBNETS_IDS
+  subnet_ids = var.PRIVATE_DB_SUBNETS_IDS
 }
 
 # Create RDS instance
