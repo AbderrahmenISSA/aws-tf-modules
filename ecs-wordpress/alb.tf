@@ -41,6 +41,7 @@ resource "aws_alb" "ALB" {
   tags = {
     Application = "${var.APP_NAME}"
     Environment = "${var.ENV_PREFIX}"
+    is_an_AWS_FMS_WAFv2_protected_resource = "Count"
   }
 }
 
