@@ -15,6 +15,7 @@ variable "DATABASE_PASSWORD" {}
 variable "DATABASE_NAME" {}
 
 ########################### ECS Service ##############################
+variable "TASK_EXECUTION_ROLE_ARN" {}
 variable "CONTAINER_NAME" {}
 variable "CONTAINER_PORT" {}
 variable "NB_REPLICAS" {}

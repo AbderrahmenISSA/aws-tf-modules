@@ -66,6 +66,7 @@ EOF
 
 resource "aws_ecs_task_definition" "ECS_TASK_DEFINITION" {
   family                   = "${var.APP_NAME}"
+  execution_role_arn       = var.TASK_EXECUTION_ROLE_ARN
   container_definitions    = data.template_file.TEMPLATE_FILE.rendered
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
