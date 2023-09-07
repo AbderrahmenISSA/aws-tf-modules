@@ -21,7 +21,7 @@ resource "aws_security_group" "EFS_MT_SG" {
     from_port   = 2049
     to_port     = 2049
     protocol    = "TCP"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks     = var.AUTHORISED_CIDR_BLOCKS
   }
     
   egress {

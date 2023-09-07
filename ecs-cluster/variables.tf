@@ -7,6 +7,7 @@ variable "AWS_REGION" {}
 variable "VPC_ID" {}
 variable "PUBLIC_SUBNETS_IDS" {}
 variable "PRIVATE_SUBNETS_IDS" {}
+variable "AUTHORISED_CIDR_BLOCKS" {}
 
 ########################### RDS Config ###############################
 variable "RDS_ENDPOINT" {}
