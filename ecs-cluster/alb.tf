@@ -66,9 +66,45 @@ resource "aws_alb_listener" "HTTP_LISTENER" {
   protocol          = "HTTP"
 
   default_action {
+    type = "redirect"
+
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  depends_on = [aws_alb.ALB]
+}
+
+resource "aws_alb_listener" "HTTPS_LISTENER" {
+  load_balancer_arn = aws_alb.ALB.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = var.CERTIFICATE_ARN
+
+  default_action {
     target_group_arn = aws_alb_target_group.ALB_TARGET_GROUP.id
     type             = "forward"
   }
 
-  depends_on = [aws_alb.ALB]
+    depends_on = [aws_alb.ALB]
+}
+
+resource "aws_alb_listener_rule" "ALB_LISTENER_RULE" {
+  depends_on   = [aws_alb_target_group.ALB_TARGET_GROUP]
+  listener_arn = aws_alb_listener.HTTPS_LISTENER.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.ALB_TARGET_GROUP.id
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
 }
