@@ -1,4 +1,5 @@
 ########################### VPC Config ###############################
+variable "AWS_REGION" {}
 variable "VPC_ID" {}
 variable "SUBNETS_IDS" {}
 

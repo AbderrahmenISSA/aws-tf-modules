@@ -34,6 +34,14 @@ data "template_file" "TEMPLATE_FILE" {
               "value": "yes"
           }
        ],
+      "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+              "awslogs-group": "/ecs/$${env_prefix}/$${app_name}",
+              "awslogs-region": "$${AWS_REGION}",
+              "awslogs-stream-prefix": "ecs"
+          }
+      },
       "portMappings": [
           {
               "containerPort": $${CONTAINER_PORT},
@@ -60,6 +68,9 @@ EOF
     DATABASE_USER      = "${var.DATABASE_USER}"
     DATABASE_PASSWORD  = "${var.DATABASE_PASSWORD}"
     DATABASE_NAME      = "${var.DATABASE_NAME}"
+    ENV_PREFIX         = "${var.ENV_PREFIX}"
+    APP_NAME           = "${var.APP_NAME}"
+    AWS_REGION         = "${var.AWS_REGION}"
     EFS_MOUNT_VOLUME   = "${var.APP_NAME}-${var.ENV_PREFIX}-volume"
   }
 }
@@ -72,7 +83,6 @@ resource "aws_ecs_task_definition" "ECS_TASK_DEFINITION" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.FARGATE_CPU
   memory                   = var.FARGATE_MEMORY
-
   volume {
     name = "${var.APP_NAME}-${var.ENV_PREFIX}-volume"
     efs_volume_configuration {
