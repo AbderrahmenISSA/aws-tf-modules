@@ -37,7 +37,7 @@ data "template_file" "TEMPLATE_FILE" {
       "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-              "awslogs-group": "/ecs/$${env_prefix}/$${app_name}",
+              "awslogs-group": "/ecs/$${ENV_PREFIX}/$${APP_NAME}",
               "awslogs-region": "$${AWS_REGION}",
               "awslogs-stream-prefix": "ecs"
           }
