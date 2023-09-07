@@ -21,7 +21,7 @@ resource "aws_security_group" "EFS_MT_SG" {
     from_port   = 2049
     to_port     = 2049
     protocol    = "TCP"
-    cidr_blocks = ["10.0.0.0/16"]
+    security_groups = ["${aws_security_group.ECS_SERVICE_SG.id}"]
   }
     
   egress {
@@ -40,9 +40,9 @@ resource "aws_security_group" "EFS_MT_SG" {
 
 # EFS mount targets for subnet_ids
 resource "aws_efs_mount_target" "EFS_MT" {
-  count           = length(var.PRIVATE_SUBNETS_IDS)
+  count           = length(var.PRIVATE_APP_SUBNETS_IDS)
   file_system_id  = aws_efs_file_system.EFS.id
-  subnet_id       = var.PRIVATE_SUBNETS_IDS[count.index]
+  subnet_id       = var.PRIVATE_APP_SUBNETS_IDS[count.index]
   security_groups = [aws_security_group.EFS_MT_SG.id]
 }
 

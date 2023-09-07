@@ -11,6 +11,13 @@ resource "aws_security_group" "ALB_SG" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+   ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -34,6 +41,7 @@ resource "aws_alb" "ALB" {
   tags = {
     Application = "${var.APP_NAME}"
     Environment = "${var.ENV_PREFIX}"
+    is_an_AWS_FMS_WAFv2_protected_resource = "Count"
   }
 }
 
@@ -49,10 +57,10 @@ resource "aws_alb_target_group" "ALB_TARGET_GROUP" {
     healthy_threshold   = "5"
     interval            = "30"
     protocol            = "HTTP"
-    matcher             = "200"
-    timeout             = "5"
+    matcher             = "200,302"
+    timeout             = "10"
     path                = "/"
-    unhealthy_threshold = "2"
+    unhealthy_threshold = "3"
     port                = var.CONTAINER_PORT
   }
 
@@ -66,9 +74,45 @@ resource "aws_alb_listener" "HTTP_LISTENER" {
   protocol          = "HTTP"
 
   default_action {
+    type = "redirect"
+
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  depends_on = [aws_alb.ALB]
+}
+
+resource "aws_alb_listener" "HTTPS_LISTENER" {
+  load_balancer_arn = aws_alb.ALB.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = var.CERTIFICATE_ARN
+
+  default_action {
     target_group_arn = aws_alb_target_group.ALB_TARGET_GROUP.id
     type             = "forward"
   }
 
-  depends_on = [aws_alb.ALB]
+    depends_on = [aws_alb.ALB]
+}
+
+resource "aws_alb_listener_rule" "ALB_LISTENER_RULE" {
+  depends_on   = [aws_alb_target_group.ALB_TARGET_GROUP]
+  listener_arn = aws_alb_listener.HTTPS_LISTENER.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.ALB_TARGET_GROUP.id
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
 }

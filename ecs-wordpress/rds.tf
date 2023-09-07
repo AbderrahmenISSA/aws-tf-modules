@@ -2,13 +2,13 @@
 resource "aws_security_group" "RDS_SG" {
   name        = "${var.APP_NAME}-${var.ENV_PREFIX}-rds-sg"
   vpc_id      = "${var.VPC_ID}"
-  description = "RDS ${var.APP_NAME}-${var.ENV_PREFIX}-service security group"
+  description = "RDS ${var.APP_NAME}-${var.ENV_PREFIX}-rds security group"
   
   ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    cidr_blocks     = var.AUTHORISED_CIDR_BLOCKS
+    security_groups = ["${aws_security_group.ECS_SERVICE_SG.id}"]
   }
   
   egress {
@@ -27,14 +27,15 @@ resource "aws_security_group" "RDS_SG" {
 
 # Create RDS Subnet group
 resource "aws_db_subnet_group" "RDS_SUBNET_GROUP" {
-  subnet_ids = var.SUBNETS_IDS
+  subnet_ids = var.PRIVATE_DB_SUBNETS_IDS
 }
 
 # Create RDS instance
 resource "aws_db_instance" "RDS_DB" {
   identifier                = "${var.APP_NAME}-${var.ENV_PREFIX}-db"
-  allocated_storage         = 10
   engine                    = "mysql"
+  allocated_storage         = 10
+  storage_encrypted         = true
   instance_class            = var.DATABASE_INSTANCE_CLASS
   db_subnet_group_name      = aws_db_subnet_group.RDS_SUBNET_GROUP.id
   vpc_security_group_ids    = ["${aws_security_group.RDS_SG.id}"]

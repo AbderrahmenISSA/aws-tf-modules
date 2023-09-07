@@ -34,6 +34,14 @@ data "template_file" "TEMPLATE_FILE" {
               "value": "yes"
           }
        ],
+      "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+              "awslogs-group": "/ecs/$${ENV_PREFIX}/$${APP_NAME}",
+              "awslogs-region": "$${AWS_REGION}",
+              "awslogs-stream-prefix": "ecs"
+          }
+      },
       "portMappings": [
           {
               "containerPort": $${CONTAINER_PORT},
@@ -56,22 +64,25 @@ EOF
     DOCKER_IMAGE_NAME  = "${var.DOCKER_IMAGE_NAME}"
     DOCKER_IMAGE_TAG   = "${var.DOCKER_IMAGE_TAG}"
     CONTAINER_PORT     = var.CONTAINER_PORT
-    RDS_ENDPOINT       = "${var.RDS_ENDPOINT}"
+    RDS_ENDPOINT       = "${element(split(":", aws_db_instance.RDS_DB.endpoint), 0)}"
     DATABASE_USER      = "${var.DATABASE_USER}"
     DATABASE_PASSWORD  = "${var.DATABASE_PASSWORD}"
     DATABASE_NAME      = "${var.DATABASE_NAME}"
+    ENV_PREFIX         = "${var.ENV_PREFIX}"
+    APP_NAME           = "${var.APP_NAME}"
+    AWS_REGION         = "${var.AWS_REGION}"
     EFS_MOUNT_VOLUME   = "${var.APP_NAME}-${var.ENV_PREFIX}-volume"
   }
 }
 
 resource "aws_ecs_task_definition" "ECS_TASK_DEFINITION" {
   family                   = "${var.APP_NAME}"
+  execution_role_arn       = var.TASK_EXECUTION_ROLE_ARN
   container_definitions    = data.template_file.TEMPLATE_FILE.rendered
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.FARGATE_CPU
   memory                   = var.FARGATE_MEMORY
-
   volume {
     name = "${var.APP_NAME}-${var.ENV_PREFIX}-volume"
     efs_volume_configuration {
@@ -83,4 +94,6 @@ resource "aws_ecs_task_definition" "ECS_TASK_DEFINITION" {
         }
       }
   }
+
+  depends_on = [aws_db_instance.RDS_DB]
 }
