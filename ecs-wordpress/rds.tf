@@ -33,8 +33,9 @@ resource "aws_db_subnet_group" "RDS_SUBNET_GROUP" {
 # Create RDS instance
 resource "aws_db_instance" "RDS_DB" {
   identifier                = "${var.APP_NAME}-${var.ENV_PREFIX}-db"
-  allocated_storage         = 10
   engine                    = "mysql"
+  allocated_storage         = 10
+  storage_encrypted         = true
   instance_class            = var.DATABASE_INSTANCE_CLASS
   db_subnet_group_name      = aws_db_subnet_group.RDS_SUBNET_GROUP.id
   vpc_security_group_ids    = ["${aws_security_group.RDS_SG.id}"]
