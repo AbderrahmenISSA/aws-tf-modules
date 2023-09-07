@@ -57,9 +57,9 @@ resource "aws_alb_target_group" "ALB_TARGET_GROUP" {
     interval            = "30"
     protocol            = "HTTP"
     matcher             = "200"
-    timeout             = "5"
+    timeout             = "10"
     path                = "/"
-    unhealthy_threshold = "2"
+    unhealthy_threshold = "3"
     port                = var.CONTAINER_PORT
   }
 
